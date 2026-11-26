@@ -6,11 +6,68 @@
   <title>Bolo Line · Operator</title>
   <link rel="stylesheet" href="/shared/tokens.css">
   <link rel="stylesheet" href="/shared/base.css">
+  <link rel="stylesheet" href="/station/station.css">
 </head>
-<body>
-  <main style="padding: 24px 16px; display: grid; gap: 16px;">
-    <h1 class="banner">Oven Line</h1>
-    <p class="note">Operator screen: placeholder until package 3 lands.</p>
+<body data-state="loading">
+  <main class="station">
+    <header class="top">
+      <h1 class="banner" id="station-name">Oven Line</h1>
+      <p class="note" id="operator"></p>
+    </header>
+
+    <section class="flow" aria-label="Log a batch">
+      <div class="mic-wrap">
+        <button type="button" class="mic" id="mic" aria-describedby="mic-note" disabled>
+          <span class="disc-wrap">
+            <span class="mic-ring" id="mic-ring" hidden></span>
+            <span class="mic-disc" id="mic-disc"></span>
+          </span>
+          <span class="mic-text">
+            <span class="title" id="mic-label">Daba ke bolo</span>
+            <span class="note" id="mic-note">hold and speak</span>
+          </span>
+        </button>
+      </div>
+
+      <div class="heard" aria-live="polite">
+        <p class="transcript" id="transcript"></p>
+        <div id="reply-wrap"><p class="reply write" id="reply" hidden></p></div>
+      </div>
+      <div class="prompt-wrap" id="prompt-wrap" aria-live="polite">
+        <p class="title write" id="prompt" hidden></p>
+        <p class="note" id="voice-note" hidden>Hindi voice not available on this device</p>
+      </div>
+
+      <div class="values-wrap"><div class="values" id="values"></div></div>
+
+      <div class="actions">
+        <div class="yesno" id="yesno" hidden>
+          <button type="button" class="btn" id="yes">Haan</button>
+          <button type="button" class="btn" id="no">Nahi</button>
+        </div>
+        <p class="saved" id="saved" hidden><span class="tick" id="tick"></span><span class="title ok write" id="saved-text"></span></p>
+        <a class="dash-link" id="dash-link" href="/dashboard" hidden>See it on the owner dashboard</a>
+        <p class="note bad" id="error" role="alert" hidden></p>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="engine" id="engine"></div>
+      <div class="card tester-card" id="tester-card">
+        <details class="tester" id="tester">
+          <summary>No Hindi? No mic? Try a recorded sample</summary>
+          <div class="samples" id="samples"></div>
+          <form class="typed" id="typed-form">
+            <label for="typed">Type instead</label>
+            <div class="typed-row">
+              <span class="input-wrap" id="typed-wrap"><input id="typed" type="text" autocomplete="off" spellcheck="false"></span>
+              <button type="submit" class="btn" id="send">Send</button>
+            </div>
+          </form>
+        </details>
+      </div>
+    </aside>
   </main>
+  <script type="module" src="/station/station.js"></script>
 </body>
 </html>
