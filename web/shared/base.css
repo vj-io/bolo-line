@@ -20,7 +20,7 @@
   --fs-note: 18px;   /* at most four sizes on a screen */
   --fs-body: 20px;
   --fs-title: 30px;
-  --fs-hero: 44px;
+  --fs-hero: 56px;   /* operator values: never smaller */
   --radius: 14px;
   --gap: 16px;
 }
