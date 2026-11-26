@@ -1,0 +1,12 @@
+[
+  {"id": "s1", "label": "Normal batch", "when": "idle",
+   "text": "Batch chaudah, oven do, ek sau assi degree, teen reject", "audio_url": "/samples/s1.m4a"},
+  {"id": "s2", "label": "Temperature too high", "when": "idle",
+   "text": "Batch pandrah, oven ek, do sau das degree, do reject", "audio_url": "/samples/s2.m4a"},
+  {"id": "s3", "label": "Forgot the temperature", "when": "idle",
+   "text": "Batch solah, oven do, chaar reject", "audio_url": "/samples/s3.m4a"},
+  {"id": "s3b", "label": "Answer: ek sau pachattar", "when": "ask:temperature_c",
+   "text": "ek sau pachattar", "audio_url": "/samples/s3b.m4a"},
+  {"id": "s4", "label": "Mixed Hindi and English", "when": "idle",
+   "text": "batch seventeen, oven two, one eighty five degree, saat reject", "audio_url": "/samples/s4.m4a"}
+]

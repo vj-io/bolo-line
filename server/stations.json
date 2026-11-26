@@ -1,0 +1,11 @@
+{
+  "id": "oven-line",
+  "name": "Oven Line",
+  "operator": "Sunita",
+  "machines": [
+    {"name": "Oven 1", "name_hi": "ओवन 1", "type": "oven", "number": 1},
+    {"name": "Oven 2", "name_hi": "ओवन 2", "type": "oven", "number": 2}
+  ],
+  "machine_aliases": {"oven": ["oven", "ovan", "avan", "ओवन", "अवन", "ओवेन"]},
+  "limits": {"temperature_c": {"min": 170, "max": 190}, "rejects": {"max": 5}}
+}

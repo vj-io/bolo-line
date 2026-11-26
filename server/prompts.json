@@ -1,0 +1,13 @@
+{
+  "ask_batch_no": {"roman": "Batch number kya hai?", "hi": "बैच नंबर क्या है?"},
+  "ask_machine": {"roman": "Kaun si machine? {machines}?", "hi": "कौन सी मशीन? {machines_hi}?"},
+  "ask_temperature_c": {"roman": "Temperature kitna tha?", "hi": "टेम्परेचर कितना था?"},
+  "ask_rejects": {"roman": "Kitne reject hue?", "hi": "कितने रिजेक्ट हुए?"},
+  "confirm_machine": {"roman": "{machine} bola? Haan ya nahi?", "hi": "{machine_hi} बोला? हाँ या नहीं?"},
+  "no_speech": {"roman": "Awaaz nahi aayi, phir se boliye", "hi": "आवाज़ नहीं आई, फिर से बोलिए"},
+  "not_understood": {"roman": "Samajh nahi aaya, phir se boliye", "hi": "समझ नहीं आया, फिर से बोलिए"},
+  "unclear_confirm": {"roman": "Sahi hai? Haan ya nahi boliye", "hi": "सही है? हाँ या नहीं बोलिए"},
+  "retry": {"roman": "Phir se boliye", "hi": "फिर से बोलिए"},
+  "saved": {"roman": "Save ho gaya", "hi": "सेव हो गया"},
+  "readback": {"roman": "Batch {batch_no}, {machine}, {temperature_c} degree, {rejects} reject. Sahi hai?", "hi": "बैच {batch_no}, {machine_hi}, {temperature_c} डिग्री, {rejects} रिजेक्ट। सही है?"}
+}

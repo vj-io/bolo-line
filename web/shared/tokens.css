@@ -1,0 +1,19 @@
+/* Design tokens from round2/briefs/design-sketchnote.md. The ONLY file in web/ that defines a colour.
+   Text pairs are measured on --paper: ink 15.9:1, notes 6.8:1, amber-ink 5.7:1, red-pen 5.1:1,
+   red-pen-ink 6.3:1, green-tick 4.9:1; ink on yellow 11.8:1; notes on yellow 5.1:1.
+   Never use --marker-3 or --yellow-deep for text. */
+:root {
+  --paper: #FBFAF6;
+  --dot: #D6D2C8;
+  --ink: #1E1E22;
+  --notes: #5B5852;
+  --marker-1: #E3E2E0;
+  --marker-2: #CBCACB;
+  --marker-3: #A1A1A4;
+  --yellow: #FED651;
+  --yellow-deep: #F5AA00;
+  --amber-ink: #8A5A00;
+  --red-pen: #C8331F;
+  --red-pen-ink: #B3261A;
+  --green-tick: #2E7D32;
+}

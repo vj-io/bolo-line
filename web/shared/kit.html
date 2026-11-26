@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bolo Line · Sketch kit</title>
+  <link rel="stylesheet" href="/shared/tokens.css">
+  <link rel="stylesheet" href="/shared/base.css">
+  <style>
+    main { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; display: grid; gap: 28px; }
+    .row { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+    .mic { width: 140px; height: 140px; display: grid; place-items: center; border: 0; background: transparent; cursor: pointer; }
+    .mic .icon { width: 64px; height: 64px; }
+    .boxes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    @media (min-width: 640px) { .boxes { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .bad { color: var(--red-pen-ink); }
+    .ok { color: var(--green-tick); }
+    .warn { color: var(--amber-ink); }
+    .tick { display: inline-block; width: 40px; height: 40px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 class="banner">Sketch kit</h1>
+    <p class="note">Every function in <code>/shared/sketch.js</code>, for the packages to copy from. Toggle "reduce motion" in the OS to check the resting state.</p>
+
+    <section class="row">
+      <button class="mic" id="mic" aria-label="Hold and speak"></button>
+      <div class="card" id="card1"><p class="title write">Daba ke bolo</p><p class="note write">hold and speak</p></div>
+      <button class="btn" id="btn-yes">Haan</button>
+      <button class="btn" id="btn-no">Nahi</button>
+    </section>
+
+    <section class="boxes" id="boxes">
+      <div class="value-box" id="v1"><span class="label">Batch</span><span class="value write" id="v1v">14</span></div>
+      <div class="value-box" id="v2"><span class="label">Machine</span><span class="value write">Oven 2</span></div>
+      <div class="value-box" id="v3"><span class="label">Temp °C</span><span class="value write">180</span></div>
+      <div class="value-box" id="v4"><span class="label">Rejects</span><span class="value write">3</span></div>
+    </section>
+
+    <section class="row" id="states">
+      <span class="title" id="heard">oven teen</span><span class="title">→ Oven 2</span>
+      <span class="tick" id="tick"></span><span class="title ok">Save ho gaya</span>
+      <span class="note warn">Limit 170 to 190 ke bahar</span>
+      <span class="note bad">Samajh nahi aaya, phir se boliye</span>
+    </section>
+
+    <section class="row" id="icons"></section>
+    <p class="note">Hindi in Kalam: <span style="font-family: var(--font-hand)">बैच 14, ओवन 2, 180 डिग्री, 3 रिजेक्ट। सही है?</span></p>
+    <button class="btn" id="replay">Replay draw-on</button>
+  </main>
+  <script type="module">
+    import { sketchBox, sketchCircle, sketchLoop, sketchSwash, sketchStrike, sketchTick, sketchArrow, drawOn, icon } from "/shared/sketch.js";
+    const $ = (id) => document.getElementById(id);
+    await document.fonts.ready;
+    $("mic").append(icon("mic", { label: "microphone" }));
+    sketchCircle($("mic"));
+    sketchBox($("card1"), { fill: "marker-1" });
+    sketchBox($("btn-yes"), { fill: "yellow" });
+    sketchBox($("btn-no"));
+    for (const id of ["v1", "v2", "v3", "v4"]) sketchBox($(id));
+    sketchSwash($("v1v"));
+    sketchLoop($("boxes"));
+    sketchStrike($("heard"));
+    sketchTick($("tick"));
+    sketchArrow($("card1"), $("v3"));
+    for (const n of ["batch", "machine", "temperature", "rejects", "mic", "tick", "cross"]) {
+      const wrap = document.createElement("span");
+      wrap.className = "note";
+      wrap.append(icon(n), " ", n);
+      $("icons").append(wrap);
+    }
+    const play = () => drawOn(document.querySelector("main"));
+    play();
+    $("replay").addEventListener("click", play);
+    window.kitReady = true;
+  </script>
+</body>
+</html>
