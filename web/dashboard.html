@@ -6,11 +6,35 @@
   <title>Bolo Line · Owner dashboard</title>
   <link rel="stylesheet" href="/shared/tokens.css">
   <link rel="stylesheet" href="/shared/base.css">
+  <link rel="stylesheet" href="/dashboard/dashboard.css">
 </head>
 <body>
-  <main style="padding: 24px 16px; display: grid; gap: 16px;">
-    <h1 class="banner">Oven Line: today</h1>
-    <p class="note">Owner dashboard: placeholder until package 4 lands.</p>
+  <main class="dash">
+    <header class="dash-head">
+      <h1 class="banner">Oven Line: today</h1>
+      <p class="note">New batches appear here as the operator speaks. Tap a row to see what was heard.</p>
+    </header>
+
+    <p class="offline" id="offline" role="status" hidden>Server unreachable. Trying again every 2 seconds.</p>
+
+    <section class="counts" aria-label="Counts">
+      <div class="card count count-all" id="count-all"><span class="count-wrap"><span class="count-n write">–</span></span><span class="count-label">Batches logged</span></div>
+      <div class="card count count-temp" id="count-temp"><span class="count-wrap"><span class="count-n write">–</span></span><span class="count-label">Temp out of limit</span></div>
+      <div class="card count count-rejects" id="count-rejects"><span class="count-wrap"><span class="count-n write">–</span></span><span class="count-label">Rejects high</span></div>
+    </section>
+
+    <section aria-label="Batch log">
+      <div class="log" id="log" role="table" aria-label="Batch log" hidden>
+        <div class="log-head" role="row">
+          <div role="columnheader">Time</div><div role="columnheader">Station</div><div role="columnheader">Operator</div>
+          <div role="columnheader">Batch</div><div role="columnheader">Machine</div><div role="columnheader">Temp (°C)</div>
+          <div role="columnheader">Rejects</div><div role="columnheader">Status</div>
+        </div>
+        <div class="log-body" id="log-body" role="rowgroup"></div>
+      </div>
+      <p class="note" id="log-state" role="status">Reading the log...</p>
+    </section>
   </main>
+  <script type="module" src="/dashboard/dashboard.js"></script>
 </body>
 </html>
