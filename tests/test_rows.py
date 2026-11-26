@@ -1,6 +1,8 @@
 """Rows storage and endpoints (PRD 6.4). Each test gets its own empty DATA_DIR, so each starts from the five seed rows."""
 import re
+import sqlite3
 import threading
+from contextlib import closing
 
 import pytest
 from fastapi.testclient import TestClient
@@ -86,8 +88,12 @@ def test_after_id_returns_only_newer_rows_newest_first():
     assert [r["id"] for r in rows(limit=2)] == [7, 6]
 
 
-def test_two_first_requests_seed_once(monkeypatch):
+@pytest.mark.parametrize("table_exists", [False, True])  # True: the rows were cleared by hand, the table stayed
+def test_two_first_requests_seed_once(monkeypatch, tmp_path, table_exists):
     """Hold the first request inside seeding until the second arrives; the write lock must make the second wait."""
+    if table_exists:
+        with closing(sqlite3.connect(tmp_path / "bolo.db")) as conn:
+            conn.execute(db.SCHEMA)
     barrier = threading.Barrier(2, timeout=1)
     real = seed.seed_rows
 
