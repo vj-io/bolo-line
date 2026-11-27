@@ -131,8 +131,7 @@ function buildSamples(samples) {
     b.type = "button";
     b.dataset.when = s.when;
     b.dataset.lang = s.lang ?? "hi"; // the samples outside a language pack are the Hindi ones
-    b.append(el("span", null, s.label), el("span", "note", s.audio_url ? "Recorded sample" : "Sample sentence, no recording"));
-    if (s.audio_url) b.dataset.recorded = "yes";
+    b.append(el("span", null, s.label), el("span", "note", s.audio_url ? "Sample clip (computer voice)" : "Sample sentence, no recording"));
     b.addEventListener("click", () => runSample(s));
     $("samples").append(b);
     sampleButtons.push(b);
@@ -185,8 +184,7 @@ function renderLang() {
   $("saved-text").textContent = prompts.saved.roman;
   $("voice-note").textContent = `${lang.name_en} voice not available on this device`;
   $("voice-note").hidden = true;
-  const recorded = sampleButtons.some((b) => b.dataset.lang === lang.code && b.dataset.recorded);
-  $("tester-summary").textContent = `No ${lang.name_en}? No mic? Try a ${recorded ? "recorded sample" : "sample sentence"}`;
+  $("tester-summary").textContent = `No ${lang.name_en}? No mic? Try a sample`;
 }
 
 function setLang(code) {
