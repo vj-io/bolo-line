@@ -1,7 +1,7 @@
 """Pydantic models for every request and response in PRD section 3.4. Frozen: change only through the integrator."""
-from typing import Literal, Optional, Union
+from typing import Annotated, Literal, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints
 
 FieldName = Literal["batch_no", "machine", "temperature_c", "rejects"]
 Source = Literal["mic_browser", "mic_sarvam", "sample", "typed", "seed"]
@@ -102,3 +102,9 @@ class SttResponse(BaseModel):
     text: str
     engine: Literal["sarvam"]
     audio_url: Optional[str] = None
+
+
+class TtsRequest(BaseModel):
+    """POST /api/tts (package 5). The reply is the audio itself (audio/wav), not JSON."""
+    text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
+    language: Annotated[str, StringConstraints(pattern=r"^[a-z]{2,3}-[A-Z]{2}$")] = "hi-IN"  # BCP-47
