@@ -149,3 +149,8 @@ def test_bad_events_are_refused(clock, change, error):
     r = client.post("/api/events", json=body)
     assert r.status_code == 422 and r.json()["error"] == error
     assert stats()["total"]["attempts"] == 0
+
+
+def test_stats_for_an_unknown_station_is_404(clock):
+    r = client.get("/api/stats", params={"station_id": "nowhere"})
+    assert r.status_code == 404 and r.json()["error"] == "unknown_station"

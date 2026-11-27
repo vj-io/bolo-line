@@ -23,6 +23,30 @@
       <div class="card count count-rejects" id="count-rejects"><span class="count-wrap"><span class="count-n write">–</span></span><span class="count-label">Rejects high</span></div>
     </section>
 
+    <section class="card shift" id="shift" aria-labelledby="shift-title">
+      <h2 class="title" id="shift-title">Today's shift</h2>
+      <div class="shift-grid">
+        <div class="shift-part">
+          <p><span class="shift-k">Batches logged</span> <span class="shift-v" id="shift-batches">–</span></p>
+          <p><span class="shift-k">Last log</span> <span id="shift-last">–</span></p>
+        </div>
+        <div class="shift-part">
+          <h3 class="shift-k">Out of limit</h3>
+          <ul class="shift-list" id="shift-out"></ul>
+        </div>
+        <div class="shift-part">
+          <h3 class="shift-k">Rejects per oven</h3>
+          <ul class="shift-list" id="shift-rejects"></ul>
+        </div>
+        <div class="shift-part">
+          <h3 class="shift-k">Heard right first time</h3>
+          <p class="shift-v" id="first-try">–</p>
+          <p class="note" id="first-try-by"></p>
+        </div>
+      </div>
+      <p class="shift-links">Audit export: <a href="/api/rows.csv" download>CSV for today</a> · <a href="/audit">Production record to print</a></p>
+    </section>
+
     <section aria-label="Batch log">
       <div class="log" id="log" role="table" aria-label="Batch log" hidden>
         <div class="log-head" role="row">
@@ -36,5 +60,6 @@
     </section>
   </main>
   <script type="module" src="/dashboard/dashboard.js"></script>
+  <script type="module" src="/dashboard/shift.js"></script>
 </body>
 </html>

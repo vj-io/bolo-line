@@ -110,6 +110,8 @@ def test_empty_day_gives_header_only_and_bad_range_is_refused(clock):
     r = client.get("/api/rows.csv", params={"from": "2026-11-28", "to": "2026-11-27"})
     assert r.status_code == 422 and r.json()["error"] == "invalid_range"
     assert client.get("/api/rows.csv", params={"from": "28-11-2026"}).status_code == 422
+    r = client.get("/api/rows.json", params={"from": "2026-11-28", "to": "2026-11-27"})
+    assert r.status_code == 422 and r.json()["error"] == "invalid_range"
 
 
 def test_audit_page_is_served():
