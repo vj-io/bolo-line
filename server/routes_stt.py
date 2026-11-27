@@ -6,7 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 
-from . import config, stt_sarvam
+from . import budget, config, stt_sarvam
 from .contracts import SttResponse
 
 router = APIRouter()
@@ -30,6 +30,10 @@ def key_not_set() -> JSONResponse:
     return error(503, "key_not_set", "SARVAM_API_KEY is not set")
 
 
+def budget_reached(what: str) -> JSONResponse:
+    return error(503, "budget_reached", f"Today's Sarvam {what} limit is used up. It starts again at midnight IST.")
+
+
 @router.post("/api/stt", response_model=SttResponse)
 def stt(file: Optional[UploadFile] = File(None), language: str = Form("hi-IN")):
     if not config.sarvam_key():
@@ -47,7 +51,10 @@ def stt(file: Optional[UploadFile] = File(None), language: str = Form("hi-IN")):
         return error(413, "file_too_large", f"file: recordings are capped at {MAX_BYTES // (1024 * 1024)} MB")
     name = f"{uuid.uuid4().hex}{ext}"
     try:
+        budget.spend(budget.STT_CALLS, 1)  # counted when sent, whatever Sarvam answers
         text = stt_sarvam.transcribe(audio, name, TYPES[ext], language)
+    except budget.BudgetReached:
+        return budget_reached("speech-to-text")
     except stt_sarvam.SarvamError as exc:
         return error(502, "stt_failed", str(exc))
     (config.data_dir() / "audio" / name).write_bytes(audio)
