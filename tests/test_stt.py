@@ -74,7 +74,10 @@ def test_transcript_is_returned_and_the_clip_is_stored(sarvam):
     (req,) = sent
     assert str(req.url) == "https://api.sarvam.ai/speech-to-text"
     assert req.headers["api-subscription-key"] == "test-key-not-real"
-    assert form_fields(req) == {"model": "saaras:v4", "mode": "codemix", "language_code": "hi-IN"}
+    assert form_fields(req) == {
+        "model": "saaras:v4", "mode": "transcribe", "language_code": "hi-IN",
+        "keyterms": '["batch", "reject", "degree", "oven", "Oven 1", "Oven 2"]',
+    }
     assert CLIP in req.content and b"audio/mp4" in req.content
 
 

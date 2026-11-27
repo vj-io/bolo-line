@@ -3,20 +3,28 @@
 Facts read from docs.sarvam.ai on 27 Nov 2026 (re-check before changing):
 - POST https://api.sarvam.ai/speech-to-text, multipart, header `api-subscription-key`.
 - `saaras:v4` is the default, recommended model; `saaras:v3` is legacy.
-- `mode=codemix` writes Hindi words in Devanagari and English words in Latin script
-  ("मेरा phone number है"). The parser reads both scripts, and Devanagari spellings are more
-  regular than romanised ones, so codemix suits Hinglish factory speech best.
+- Modes: transcribe (default), translate, verbatim, translit, codemix. `keyterms` (saaras:v4 only)
+  takes up to 50 words to listen for, as a JSON array in one form field.
+- Chosen by running the five sample clips on 27 Nov 2026 (parsed fields right, of 5):
+  codemix 1, translit 2, verbatim 3, transcribe 3; with the station's words as keyterms,
+  verbatim 4 and transcribe 5. Without keyterms "batch" came back as "ब्याज" and adjacent numbers
+  were glued ("oven do, chaar reject" -> "oven 24 reject").
 - Up to 30 s of audio per request; WAV, MP3, AAC, M4A, OGG/Opus, WebM and more are accepted.
 - Success: {"request_id", "transcript", "language_code", ...}.
   Errors: {"error": {"message", "code", "request_id"}}, or {"detail": "..."} for a bad model.
 """
+import json
+
 import httpx
 
 from . import config
 
 BASE_URL = "https://api.sarvam.ai"
 MODEL = "saaras:v4"
-MODE = "codemix"
+MODE = "transcribe"
+# The words every record uses: field keywords, machine types and names ("Oven 2").
+KEYTERMS = ["batch", "reject", "degree"] + sorted({m["type"] for m in config.STATION["machines"]}) + [
+    m["name"] for m in config.STATION["machines"]]
 TIMEOUT_S = 30
 # Tests swap in httpx.MockTransport here; None means the real network.
 TRANSPORT = None
@@ -52,7 +60,7 @@ def transcribe(audio: bytes, filename: str, content_type: str, language: str = "
     body = post(
         "/speech-to-text",
         files={"file": (filename, audio, content_type)},
-        data={"model": MODEL, "mode": MODE, "language_code": language},
+        data={"model": MODEL, "mode": MODE, "language_code": language, "keyterms": json.dumps(KEYTERMS)},
     )
     text = body.get("transcript")
     if not isinstance(text, str):
