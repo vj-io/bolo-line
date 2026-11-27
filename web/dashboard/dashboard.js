@@ -15,7 +15,7 @@ const COLUMNS = [
 ];
 const SOURCES = {
   mic_browser: "Microphone (browser speech)", mic_sarvam: "Microphone (Sarvam speech)",
-  sample: "Recorded sample", typed: "Typed", seed: "Seed row",
+  sample: "Sample", typed: "Typed", seed: "Seed row",
 };
 
 // ponytail: the first load takes the newest 200 rows; counts cover only rows the page holds.
