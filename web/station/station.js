@@ -730,7 +730,7 @@ async function init() {
   sketchBox($("send"), { shadow: false });
   sketchBox($("yes"), { fill: "yellow" });
   sketchBox($("no"));
-  $("tester").open = matchMedia("(min-width: 900px)").matches;
+  $("tester").open = matchMedia("(min-width: 900px)").matches || new URLSearchParams(location.search).has("tester");
   renderLang();
   renderMic();
   wireMic();
