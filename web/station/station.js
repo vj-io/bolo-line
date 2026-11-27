@@ -46,6 +46,7 @@ const parse = (text, draft = null, expect = null) => api("/api/parse", { station
 
 async function busy(fn) {
   st.busy = true;
+  $("error").hidden = true; // a note from an earlier failed call must not outlive the next attempt
   renderControls();
   try {
     await fn();
