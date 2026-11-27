@@ -1,0 +1,18 @@
+Unicode CLDR spell-out rules (rule-based number format), copied unchanged.
+
+Source:  https://github.com/unicode-org/cldr  tag release-49, folder common/rbnf
+         https://raw.githubusercontent.com/unicode-org/cldr/release-49/common/rbnf/hi.xml
+         https://raw.githubusercontent.com/unicode-org/cldr/release-49/common/rbnf/mr.xml
+Fetched: 27 Nov 2026
+Licence: the header of each file says
+         "For terms of use, see http://www.unicode.org/copyright.html"
+         "SPDX-License-Identifier: Unicode-DFS-2016"
+
+SHA-256 (shasum -a 256 *.xml):
+0e36dbbbf250d7f3faaddc3ff016fc651b1ea8911f9a335c9c296ff7d290a929  hi.xml
+78fb9e745590394f35c0a73dc5d78c0f93122df8947b80bf94879a480d580217  mr.xml
+
+Used by tools/gen_numbers.py, which expands the %spellout-cardinal rules for 0 to 999 into
+server/lang/numbers_<code>.json. To add a language: download its file from the same folder at the
+same tag into this folder, add its hash line above, and run `python tools/gen_numbers.py <code>`.
+Do not edit these files or the generated tables by hand.

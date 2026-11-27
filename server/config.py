@@ -32,6 +32,27 @@ PROMPTS = _load("prompts.json")
 STATIONS = {STATION["id"]: STATION}
 
 
+def _load_lang(path: Path):
+    """One language pack (server/lang/<code>.json). Its generated number table, when it names one,
+    is read here too, so nothing is opened after start-up."""
+    pack = _load(f"lang/{path.name}")
+    if pack["numbers"]["table"]:
+        pack["numbers"]["table"] = _load(f"lang/{pack['numbers']['table']}")
+    return pack
+
+
+DEFAULT_LANG = "hi"
+# Language packs by code, the default first: this is the order of the buttons on the operator screen.
+LANGS = {pack["code"]: pack for pack in sorted(
+    (_load_lang(p) for p in (SERVER_DIR / "lang").glob("*.json") if not p.name.startswith("numbers_")),
+    key=lambda pack: (pack["code"] != DEFAULT_LANG, pack["code"]))}
+
+
 def get_station(station_id: str):
     """The station dict, or None when the id is unknown."""
     return STATIONS.get(station_id)
+
+
+def get_lang(code: str):
+    """The language pack, or None when the code is unknown."""
+    return LANGS.get(code)
