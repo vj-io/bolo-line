@@ -28,3 +28,9 @@ def test_pages_and_assets():
 def test_stt_without_key():
     r = client.post("/api/stt")
     assert r.status_code == 503 and r.json()["error"] == "key_not_set"
+
+
+def test_malformed_body_uses_error_shape():
+    r = client.post("/api/rows", json={"station_id": "oven-line", "batch_no": "fourteen"})
+    assert r.status_code == 422
+    assert r.json()["error"] == "invalid_request" and "batch_no" in r.json()["message"]
