@@ -47,6 +47,7 @@ EN_KEY = {
 EN_SKIP = words("number", "no", "and", "the", "is", "was")
 EN_YES = words("yes", "yeah", "ok", "okay")
 EN_NO = words("no")
+EN_UNSURE = ["no idea"]  # "I don't know" phrases that hold a no-word
 
 DEVA_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789")  # other scripts' digits need no table: int() reads them
 PUNCT = re.compile(r"[°,.;:!?।|/\\()\[\]\"'’‘“”\-–—]")
@@ -98,6 +99,7 @@ def _compile(pack):
         key={role: en | words(*pack["keywords"][role]) for role, en in EN_KEY.items()},
         skip=EN_SKIP | words(*pack["keywords"]["skip"]),
         yes=EN_YES | words(*pack["yes"]), no=EN_NO | words(*pack["no"]),
+        unsure=[tokenize(phrase) for phrase in EN_UNSURE + pack["unsure"]],
         script=(lo, hi),
     )
 
@@ -366,9 +368,14 @@ def _say(status, fields, ask, suggest, station, prompts, P):
 
 
 def confirm(text, lang="hi"):
-    """PRD 4.4: any no-word wins, then any yes-word, else unclear."""
+    """PRD 4.4: any no-word wins, then any yes-word, else unclear. An "I don't know" phrase
+    ("pata nahi") is unclear whatever else was said: its no-word is not a no, and a row is neither
+    saved nor thrown away on an unsure answer."""
     P = PACKS[lang]
-    toks = set(tokenize(text or ""))
+    toks = tokenize(text or "")
+    if any(toks[i:i + len(phrase)] == phrase for phrase in P.unsure for i in range(len(toks))):
+        return "unclear"
+    toks = set(toks)
     if toks & P.no:
         return "no"
     if toks & P.yes:

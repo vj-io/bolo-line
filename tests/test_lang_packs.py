@@ -39,6 +39,7 @@ def test_pack_shape(pack):
     assert pack["status"] == "ready" or len(pack["notes"]) > 40  # a beta pack says what is unchecked
     assert set(pack["keywords"]) == ROLES
     assert pack["keywords"]["batch"] and pack["keywords"]["reject"] and pack["yes"] and pack["no"]
+    assert pack["unsure"] and all(len(phrase.split()) >= 2 for phrase in pack["unsure"])
     assert set(pack["labels"]) == LABEL_KEYS and all(pack["labels"].values())
     assert fields_of(pack["labels"]["temp_limit"]) == {"min", "max"}
     assert fields_of(pack["labels"]["rejects_limit"]) == {"max"}
@@ -57,7 +58,7 @@ def test_every_pack_word_is_in_the_packs_own_script(pack):
     # A word in another Indic script could never match: the script check refuses the sentence first.
     P = parser.PACKS[pack["code"]]
     n = pack["numbers"]
-    listed = [w for ws in pack["keywords"].values() for w in ws] + pack["yes"] + pack["no"]
+    listed = [w for ws in pack["keywords"].values() for w in ws] + pack["yes"] + pack["no"] + pack["unsure"]
     listed += [a for m in pack["machines"].values() for a in m["aliases"] + [m["name"]]]
     listed += n["hundred"] + n["thousand"] + list(n["half_hundred"]) + [c["phrase"] for c in n["colloquial"]]
     listed += [w for s in n["words"].values() for w in s.split()] + list(n["table"] or {})
@@ -194,3 +195,28 @@ def test_script_check_for_a_pack_in_another_script():
     assert not parser._other_script("બેચ ૧૪ batch 14", gu)   # its own script, digits, Latin
     assert not parser._other_script("બેચ ચૌદ। ॥", gu)        # the danda is not a Devanagari letter
     assert not parser._other_script("१४ ௧௪", gu)             # digits of other scripts
+
+
+# "I don't know" at the read-back holds a no-word ("pata nahi") but is not a no: the question is
+# asked again instead of the row being thrown away.
+@pytest.mark.parametrize("lang, text, answer", [
+    ("hi", "pata nahi kya", "unclear"), ("hi", "pata nahi", "unclear"), ("hi", "mujhe nahi pata", "unclear"),
+    ("hi", "पता नहीं", "unclear"), ("hi", "maloom nahi", "unclear"), ("hi", "मालूम नहीं है", "unclear"),
+    ("hi", "nahi, pata nahi", "unclear"), ("hi", "haan... pata nahi", "unclear"), ("hi", "no idea", "unclear"),
+    ("hi", "nahi", "no"), ("hi", "pata hai, nahi", "no"), ("hi", "nahi pta", "no"), ("hi", "haan pata hai", "yes"),
+    ("mr", "माहित नाही", "unclear"), ("mr", "माहीत नाही", "unclear"), ("mr", "मला माहित नाही", "unclear"),
+    ("mr", "नाही माहीत", "unclear"), ("mr", "ठाऊक नाही", "unclear"), ("mr", "no idea", "unclear"),
+    ("mr", "नाही", "no"), ("mr", "माहित आहे, नाही", "no"), ("mr", "हो माहित आहे", "yes"),
+])
+def test_dont_know_is_unclear_not_no(lang, text, answer):
+    r = client.post("/api/confirm", json={"text": text, "lang": lang})
+    assert r.status_code == 200 and r.json() == {"answer": answer}
+
+
+def test_dont_know_without_lang_is_unclear():
+    assert client.post("/api/confirm", json={"text": "pata nahi kya"}).json() == {"answer": "unclear"}
+
+
+@pytest.mark.parametrize("pack", PACKS, ids=IDS)
+def test_every_unsure_phrase_of_a_pack_is_unclear(pack):
+    assert [p for p in pack["unsure"] if parser.confirm(f"hmm {p} hmm", pack["code"]) != "unclear"] == []

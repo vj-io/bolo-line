@@ -18,6 +18,7 @@
   "machines": {"oven": {"name": "ओवन", "aliases": []}},
   "yes": ["haan", "han", "ha", "haa", "ji", "sahi", "theek", "thik", "हां", "हाँ", "हा", "जी", "सही", "ठीक", "यस", "ओके"],
   "no": ["nahi", "nahin", "nai", "na", "galat", "नहीं", "नही", "ना", "गलत", "नो"],
+  "unsure": ["pata nahi", "pata nahin", "pata nai", "nahi pata", "nahin pata", "पता नहीं", "पता नही", "नहीं पता", "maloom nahi", "maloom nahin", "nahi maloom", "मालूम नहीं", "मालूम नही", "नहीं मालूम"],
   "numbers": {
     "table": null,
     "words": {
