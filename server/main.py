@@ -3,10 +3,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import config, routes_config, routes_parse, routes_rows, routes_stt, routes_tts
+from . import config, routes_config, routes_events, routes_export, routes_parse, routes_rows, routes_stt, routes_tts
 
 app = FastAPI(title="Bolo Line", version=routes_config.VERSION)
-for module in (routes_config, routes_parse, routes_rows, routes_stt, routes_tts):
+for module in (routes_config, routes_parse, routes_rows, routes_stt, routes_tts, routes_events, routes_export):
     app.include_router(module.router)
 
 
@@ -35,6 +35,11 @@ def demo_page():
     return FileResponse(WEB / "demo.html")
 
 
-for prefix in ("shared", "station", "dashboard", "vendor", "samples"):
+@app.get("/audit", include_in_schema=False)
+def audit_page():
+    return FileResponse(WEB / "audit.html")
+
+
+for prefix in ("shared", "station", "dashboard", "vendor", "samples", "audit"):
     app.mount(f"/{prefix}", StaticFiles(directory=WEB / prefix), name=prefix)
 app.mount("/audio", StaticFiles(directory=config.data_dir() / "audio"), name="audio")
