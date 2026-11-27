@@ -1,0 +1,30 @@
+# Keeps the free Render service awake by day: it sleeps after 15 minutes without traffic.
+# Every 5 minutes from 02:00 to 18:55 UTC, which is 07:30 to 00:25 IST. The night gap is on purpose:
+# the service sleeps after about 00:45 IST and wakes with the five starting rows, so each day starts clean.
+# GitHub can start a scheduled run late, so a daytime sleep is still possible.
+name: Keep the live link awake
+
+on:
+  schedule:
+    - cron: "*/5 2-18 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      URL: https://bolo-line.onrender.com/api/health
+      LAST_DAY: "20261203" # the hackathon's review ends; after this IST date the job does nothing
+    steps:
+      - name: Request /api/health
+        run: |
+          if [ "$(TZ=Asia/Kolkata date +%Y%m%d)" -gt "$LAST_DAY" ]; then
+            echo "After $LAST_DAY IST: nothing to do."
+            exit 0
+          fi
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 90 "$URL") || { echo "::error::No answer from $URL (request failed or took over 90 s)"; exit 1; }
+          echo "$URL answered $code"
+          [ "$code" = 200 ] || { echo "::error::Expected 200, got $code"; exit 1; }
