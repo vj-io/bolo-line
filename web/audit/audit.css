@@ -1,0 +1,54 @@
+/* Production record. Screen: 375 px first, the wide table scrolls inside its own box. Print: A4 portrait, plain
+   ink lines, no paper dots, header row repeated on every page, rows never split. Colours from tokens.css only. */
+.audit { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; display: grid; gap: 20px; }
+.audit [hidden] { display: none !important; }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; font-size: var(--fs-note); }
+.controls a { color: var(--ink); }
+.day { display: inline-flex; align-items: center; gap: 8px; }
+.day input { min-height: 44px; padding: 4px 8px; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); }
+
+.head { display: grid; gap: 12px; }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; margin: 0; }
+.facts div { min-width: 0; }
+.facts dt { color: var(--notes); font-size: var(--fs-note); }
+.facts dd { margin: 0; font-family: var(--font-hand); font-weight: 700; overflow-wrap: anywhere; }
+
+.table-wrap { overflow-x: auto; }
+.record { width: 100%; border-collapse: collapse; font-size: var(--fs-note); }
+.record th { font-family: var(--font-hand); font-weight: 700; text-align: left; border-bottom: 2px solid var(--ink); }
+.record th, .record td { padding: 8px 8px; vertical-align: top; }
+.record td { border-bottom: 1px solid var(--marker-2); }
+.record .num { font-family: var(--font-hand); font-weight: 700; white-space: nowrap; }
+.record .heard { min-width: 14em; }
+.bad { color: var(--red-pen-ink); }
+.warn { color: var(--amber-ink); }
+
+.sign { display: grid; gap: 28px; padding-top: 24px; }
+.sign-line { border-bottom: 1.5px solid var(--ink); padding-bottom: 24px; font-size: var(--fs-note); max-width: 520px; }
+.sign-note { max-width: 640px; }
+
+@media (min-width: 640px) {
+  .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@page { size: A4 portrait; margin: 14mm 12mm; }
+
+@media print {
+  body { background: none; font-size: 11pt; }
+  .audit { max-width: none; padding: 0; gap: 10pt; }
+  .controls { display: none; }
+  .head { padding: 8pt 10pt; border: 1.5pt solid var(--ink); }
+  .head .sketch-layer { display: none; }
+  .title { font-size: 18pt; }
+  .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4pt 14pt; }
+  .facts dt, .note { font-size: 9pt; }
+  .table-wrap { overflow: visible; }
+  .record { font-size: 9.5pt; }
+  .record th, .record td { padding: 4pt 4pt; }
+  .record .heard { min-width: 0; }
+  .record thead { display: table-header-group; }
+  .record tr { break-inside: avoid; }
+  .sign { gap: 18pt; padding-top: 14pt; break-inside: avoid; }
+  .sign-line { padding-bottom: 16pt; font-size: 10pt; }
+}

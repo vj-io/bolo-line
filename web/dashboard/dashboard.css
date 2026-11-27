@@ -71,3 +71,22 @@
   .log-head > *, .cell { padding: 10px; }
   .detail { padding: 0 10px 14px; }
 }
+
+/* End-of-shift card and first-try figure (package 7). Paper fill: status words never sit on grey marker. */
+.shift { display: grid; gap: 14px; }
+.shift-grid { display: grid; gap: 14px; }
+.shift-part { display: grid; gap: 4px; align-content: start; min-width: 0; }
+.shift-k { color: var(--notes); font-family: var(--font-note); font-weight: 400; font-size: var(--fs-note); }
+.shift-v { font-family: var(--font-hand); font-weight: 700; }
+.shift-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; overflow-wrap: anywhere; }
+.shift .bad { color: var(--red-pen-ink); }
+.shift .warn { color: var(--amber-ink); }
+.shift-links { font-size: var(--fs-note); }
+.shift-links a { color: var(--ink); white-space: nowrap; }
+
+@media (min-width: 640px) {
+  .shift-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 28px; }
+}
+@media (min-width: 1000px) {
+  .shift-grid { grid-template-columns: 1fr 1.6fr 1fr 1.4fr; }
+}

@@ -476,6 +476,7 @@ function showSaved() {
 }
 
 function discard() {
+  reportAttempt("discarded"); // p7
   toIdle();
   showReply(prompts.retry.roman, false);
   say(prompts.retry);
@@ -506,12 +507,13 @@ async function handleText(text, source, audioUrl = null) {
   const asking = st.mode === "asking";
   const res = await parse(text, asking ? st.res.fields : null, asking ? st.res.ask : null);
   if (res.hint === "wrong_language") return wrongLanguage(res);
-  if (text && !st.utterances.length) Object.assign(st, { source, audioUrl });
+  if (text && !st.utterances.length) Object.assign(st, { source, audioUrl, answers: 0 }); // p7: answers
   if (text) st.utterances.push(text);
   route(res);
 }
 
 async function answerWith(answer) {
+  st.answers += 1; // p7: every yes, no or unclear in this attempt
   if (answer === "unclear") return unclear();
   if (st.mode === "confirm") {
     const fields = { ...st.res.fields };
@@ -523,7 +525,18 @@ async function answerWith(answer) {
     station_id: station.id, ...st.res.fields,
     transcript: st.utterances.join(" / "), source: st.source, audio_url: st.audioUrl,
   });
+  reportAttempt("saved"); // p7
   showSaved();
+}
+
+// p7: one event per finished attempt, for the first-try figure. First try = one utterance and one answer (the "haan"):
+// no follow-up question, no machine check, no "nahi", no unclear answer. Fire and forget: never blocks or undoes a save.
+function reportAttempt(kind) {
+  const firstTry = kind === "saved" && st.utterances.length === 1 && st.answers === 1;
+  fetch("/api/events", {
+    method: "POST", keepalive: true, headers: { "content-type": "application/json" },
+    body: JSON.stringify({ kind, first_try: firstTry, engine: st.source?.replace("mic_", ""), lang: lang.locale, station_id: station.id }),
+  }).catch(() => {});
 }
 
 function playClip(url) {
@@ -682,7 +695,9 @@ async function init() {
   $("station-name").textContent = station.name;
   $("operator").textContent = `Operator: ${station.operator}`;
   showExample();
-  if (sarvamConfigured(config) && !speech.canListen()) st.engine = "sarvam";
+  // Sarvam is the accurate engine, so it is the default whenever a key is set and the browser can record.
+  if (sarvamConfigured(config) && (speech.canRecord() || !speech.canListen())) st.engine = "sarvam";
+  speech.useSarvamVoice(sarvamConfigured(config));
   await document.fonts.ready;
 
   $("mic-disc").append(icon("mic"));
