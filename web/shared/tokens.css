@@ -1,4 +1,4 @@
-/* Design tokens from round2/briefs/design-sketchnote.md. The ONLY file in web/ that defines a colour.
+/* Design tokens from docs/design.md. The ONLY file in web/ that defines a colour.
    Text pairs are measured on --paper: ink 15.9:1, notes 6.8:1, amber-ink 5.7:1, red-pen 5.1:1,
    red-pen-ink 6.3:1, green-tick 4.9:1; ink on yellow 11.8:1; notes on yellow 5.1:1.
    Never use --marker-3 or --yellow-deep for text. Status colours (green, amber, red) sit on paper or

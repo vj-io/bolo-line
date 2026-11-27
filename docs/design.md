@@ -1,8 +1,8 @@
 # Design contract: Sketchnote as the product UI
 
-The user asked for the opuscar `sketchnote` style (brag-styles library) as the product's look. That style is written for a film; this file is its translation into a web app UI. Every build session uses these tokens and rules; nobody invents colours, fonts or radii.
+Bolo Line uses the "sketchnote" style from the Lemo-Opuscar style library, chosen after a review of every style in the library. That style is written for a film; this file is its translation into a web app UI. Every screen uses these tokens and rules; nobody invents colours, fonts or radii.
 
-Source: `~/.claude/plugins/cache/brag-scaled/brag-scaled/0.9.1-plus/skills/brag-styles/opuscar/styles/sketchnote/STYLE.md` (read it for the feel; the film rules about frames, 24 fps, camera moves, subtitles and sound do not apply to the app).
+Source: the Lemo-Opuscar `sketchnote` style brief (CC BY-NC 4.0), adapted here as a UI theme. Its film rules about frames, 24 fps, camera moves, subtitles and sound do not apply to the app.
 
 ## What carries over
 - **The screen is a page of visual notes**: warm white paper with a faint dot grid, black fineliner lines, grey marker for volume and shadow, and one yellow marker for the single thing that matters.

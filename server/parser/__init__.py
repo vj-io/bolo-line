@@ -2,7 +2,7 @@
 
 Pure: no file, network or database access. The station and the prompts come in as
 arguments, so tests call `parse` and `confirm` directly as well as through the endpoint.
-Ported from round2/research/parser_reference.py.
+Ported from the reference parser written alongside the spec.
 """
 import re
 
