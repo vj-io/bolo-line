@@ -13,6 +13,7 @@
     <header class="top">
       <h1 class="banner" id="station-name">Oven Line</h1>
       <p class="note" id="operator"></p>
+      <div class="langs" id="langs" role="group" aria-label="Language"></div>
     </header>
 
     <section class="flow" aria-label="Log a batch">
@@ -42,8 +43,8 @@
 
       <div class="actions">
         <div class="yesno" id="yesno" hidden>
-          <button type="button" class="btn" id="yes">Haan</button>
-          <button type="button" class="btn" id="no">Nahi</button>
+          <button type="button" class="btn" id="yes"><span id="yes-label">Haan</span></button>
+          <button type="button" class="btn" id="no"><span id="no-label">Nahi</span></button>
         </div>
         <p class="saved" id="saved" hidden><span class="tick" id="tick"></span><span class="title ok write" id="saved-text"></span></p>
         <a class="dash-link" id="dash-link" href="/dashboard" hidden>See it on the owner dashboard</a>
@@ -55,7 +56,7 @@
       <div class="engine" id="engine"></div>
       <div class="card tester-card" id="tester-card">
         <details class="tester" id="tester">
-          <summary>No Hindi? No mic? Try a recorded sample</summary>
+          <summary id="tester-summary">No Hindi? No mic? Try a recorded sample</summary>
           <div class="samples" id="samples"></div>
           <form class="typed" id="typed-form">
             <label for="typed">Type instead</label>

@@ -11,7 +11,7 @@ import * as speech from "/station/speech.js";
 const FIELDS = ["batch_no", "machine", "temperature_c", "rejects"];
 const LABELS = { batch_no: "Batch", machine: "Machine", temperature_c: "Temp °C", rejects: "Rejects" };
 const ICONS = { batch_no: "batch", machine: "machine", temperature_c: "temperature", rejects: "rejects" };
-const EXAMPLE = "Example: Batch chaudah, oven do, ek sau assi degree, teen reject";
+const LANG_KEY = "bolo.lang"; // localStorage: the language last chosen on this device
 const SHORT_PRESS_MS = 500;
 const SAVED_MS = 2500;
 const BOIL_MS = 135;
@@ -25,7 +25,7 @@ function el(tag, cls, text) {
 }
 const wait = (ms) => new Promise((r) => setTimeout(r, reducedMotion() ? 0 : ms));
 
-let station, prompts;
+let station, prompts, languages, lang; // lang: the selected entry of config.languages; prompts: its prompts
 const st = {
   mode: "loading", res: null, utterances: [], source: null, audioUrl: null, unclear: 0,
   busy: false, listening: false, micOk: false, engine: "browser", gen: 0,
@@ -33,6 +33,7 @@ const st = {
 };
 const boxes = {}; // field -> { wrap, box, labelText, heard, value, note, swash, strike }
 const sampleButtons = [];
+const langButtons = [];
 
 // ---------- server ----------
 async function api(path, body) {
@@ -42,7 +43,7 @@ async function api(path, body) {
   if (!r.ok) throw Object.assign(new Error(data.message || `HTTP ${r.status}`), { status: r.status });
   return data;
 }
-const parse = (text, draft = null, expect = null) => api("/api/parse", { station_id: station.id, text, draft, expect });
+const parse = (text, draft = null, expect = null) => api("/api/parse", { station_id: station.id, text, draft, expect, lang: lang.code });
 
 async function busy(fn) {
   st.busy = true;
@@ -60,7 +61,7 @@ async function busy(fn) {
 
 // ---------- voice ----------
 async function say(p) {
-  const spoken = await speech.speak(p.hi);
+  const spoken = await speech.speak(p.text, lang.locale);
   $("voice-note").hidden = spoken;
 }
 
@@ -106,12 +107,31 @@ function buildEngine(config) {
   sketchBox(e, { fill: "marker-1", shadow: false });
 }
 
+// One button per language pack, each in its own script. The selected one carries a tick and a
+// yellow fill (never colour alone) and aria-pressed.
+function buildLangs() {
+  for (const l of languages) {
+    const b = el("button", "btn lang");
+    b.type = "button";
+    b.dataset.code = l.code;
+    const name = el("span", null, l.name);
+    name.lang = l.code;
+    b.append(icon("tick"), name);
+    if (l.status === "beta") b.append(el("span", "beta", "beta"));
+    b.addEventListener("click", () => setLang(l.code));
+    $("langs").append(b);
+    langButtons.push(b);
+  }
+}
+
 function buildSamples(samples) {
   for (const s of samples) {
     const b = el("button", "btn sample");
     b.type = "button";
     b.dataset.when = s.when;
-    b.append(el("span", null, s.label), el("span", "note", "Recorded sample"));
+    b.dataset.lang = s.lang ?? "hi"; // the samples outside a language pack are the Hindi ones
+    b.append(el("span", null, s.label), el("span", "note", s.audio_url ? "Recorded sample" : "Sample sentence, no recording"));
+    if (s.audio_url) b.dataset.recorded = "yes";
     b.addEventListener("click", () => runSample(s));
     $("samples").append(b);
     sampleButtons.push(b);
@@ -134,9 +154,10 @@ function renderControls() {
   $("yes").disabled = $("no").disabled = locked;
   const key = whenKey();
   for (const b of sampleButtons) {
-    b.hidden = b.dataset.when !== key;
+    b.hidden = b.dataset.when !== key || b.dataset.lang !== lang.code;
     b.disabled = locked;
   }
+  for (const b of langButtons) b.disabled = locked;
   $("typed").disabled = $("send").disabled = locked || st.mode === "saved" || st.mode === "loading";
   document.body.dataset.listening = st.listening ? "yes" : "no";
 }
@@ -144,10 +165,40 @@ function renderControls() {
 function renderMic(ok = st.engine === "sarvam" ? speech.canRecord() : speech.canListen()) {
   st.micOk = ok;
   $("mic").disabled = !st.micOk;
-  $("mic-label").textContent = st.micOk ? "Daba ke bolo" : "Is browser mein mic nahi chalta";
+  $("mic-label").textContent = st.micOk ? lang.labels.mic : lang.labels.mic_unavailable;
   $("mic-note").textContent = st.micOk ? "hold and speak" : "Use a sample or type below";
   sketchCircle($("mic-disc"), { fill: st.micOk ? "yellow" : "marker-1" });
   if (!st.micOk) $("tester").open = true;
+}
+
+// Everything on the screen that is written in the selected language.
+function renderLang() {
+  for (const b of langButtons) {
+    const on = b.dataset.code === lang.code;
+    b.setAttribute("aria-pressed", String(on));
+    b.classList.toggle("on", on);
+    sketchBox(b, { fill: on ? "yellow" : "paper", shadow: false });
+  }
+  $("yes-label").textContent = lang.labels.yes;
+  $("no-label").textContent = lang.labels.no;
+  $("saved-text").textContent = prompts.saved.roman;
+  $("voice-note").textContent = `${lang.name_en} voice not available on this device`;
+  $("voice-note").hidden = true;
+  const recorded = sampleButtons.some((b) => b.dataset.lang === lang.code && b.dataset.recorded);
+  $("tester-summary").textContent = `No ${lang.name_en}? No mic? Try a ${recorded ? "recorded sample" : "sample sentence"}`;
+}
+
+function setLang(code) {
+  if (st.busy || st.listening || code === lang.code) return;
+  lang = languages.find((l) => l.code === code);
+  prompts = lang.prompts;
+  try {
+    localStorage.setItem(LANG_KEY, code);
+  } catch { /* storage refused: the choice lasts until the page is reloaded */ }
+  speech.stopSpeaking();
+  renderLang();
+  renderMic(st.micOk);
+  toIdle(); // a row half said in the old language is dropped
 }
 
 // The machine is shown as its number, large, with its type as the label (design contract: 56 px values).
@@ -184,14 +235,16 @@ function paintBoxes(fields, problems = []) {
   }
 }
 
+const fill = (template, values) => template.replace(/\{(\w+)\}/g, (_, k) => values[k]);
+
 function noteFlags(flags) {
   const t = station.limits.temperature_c;
   const r = station.limits.rejects;
   if (flags.temp_out_of_limit) {
-    boxes.temperature_c.note.append(el("span", "warn write", `Limit ${t.min} to ${t.max} ke bahar. Save hoga, owner ko dikhega.`));
+    boxes.temperature_c.note.append(el("span", "warn write", fill(lang.labels.temp_limit, t)));
   }
   if (flags.rejects_over_limit) {
-    boxes.rejects.note.append(el("span", "warn write", `Limit ${r.max} se zyada. Save hoga, owner ko dikhega.`));
+    boxes.rejects.note.append(el("span", "warn write", fill(lang.labels.rejects_limit, r)));
   }
 }
 
@@ -244,7 +297,7 @@ function showError(err) {
 
 // ---------- transcript ----------
 function showExample() {
-  $("transcript").replaceChildren(el("span", "note", EXAMPLE));
+  $("transcript").replaceChildren(el("span", "note", `Example: ${lang.labels.example}`));
 }
 
 // A new utterance from any source: leave the saved screen at once, stop the read-back voice, and
@@ -393,6 +446,16 @@ function showMisheard(reply) {
   say(reply);
 }
 
+// The words are in another script than the selected language's, so nothing was read. The language
+// buttons come into view; a question that is open stays open.
+function wrongLanguage(res) {
+  $("langs").scrollIntoView({ block: "nearest" });
+  if (st.mode === "idle") return showMisheard(res.say);
+  strikeWords();
+  showReply(res.say.roman, true);
+  say(res.say);
+}
+
 function showSaved() {
   st.gen += 1;
   const gen = st.gen;
@@ -437,11 +500,12 @@ function route(res) {
 // ---------- input from any source ----------
 async function handleText(text, source, audioUrl = null) {
   if (st.mode === "readback" || st.mode === "confirm") {
-    const { answer } = await api("/api/confirm", { text });
+    const { answer } = await api("/api/confirm", { text, lang: lang.code });
     return answerWith(answer);
   }
   const asking = st.mode === "asking";
   const res = await parse(text, asking ? st.res.fields : null, asking ? st.res.ask : null);
+  if (res.hint === "wrong_language") return wrongLanguage(res);
   if (text && !st.utterances.length) Object.assign(st, { source, audioUrl });
   if (text) st.utterances.push(text);
   route(res);
@@ -517,7 +581,7 @@ function pressStart() {
   const engine = st.engine;
   let ctl;
   try {
-    ctl = engine === "sarvam" ? speech.record() : speech.listen(writeWords);
+    ctl = engine === "sarvam" ? speech.record() : speech.listen(writeWords, lang.locale);
   } catch {
     return micUnavailable();
   }
@@ -555,7 +619,7 @@ function heard(press, engine, result) {
   if (speech.MIC_ERRORS.has(result.error)) return micUnavailable();
   busy(async () => {
     if (engine === "sarvam") {
-      const r = await transcribe(result.blob);
+      const r = await transcribe(result.blob, lang.locale);
       writeWords(r.text);
       return handleText(r.text, "mic_sarvam", r.audio_url ?? null);
     }
@@ -600,7 +664,6 @@ function wireMic() {
 // ---------- start ----------
 async function init() {
   buildBoxes();
-  showExample();
   let config;
   try {
     config = await api("/api/config");
@@ -609,22 +672,30 @@ async function init() {
     return;
   }
   station = config.station;
-  prompts = config.prompts;
+  languages = config.languages;
+  let saved = null;
+  try {
+    saved = localStorage.getItem(LANG_KEY);
+  } catch { /* storage refused: start in the first language */ }
+  lang = languages.find((l) => l.code === saved) ?? languages[0];
+  prompts = lang.prompts;
   $("station-name").textContent = station.name;
   $("operator").textContent = `Operator: ${station.operator}`;
-  $("saved-text").textContent = prompts.saved.roman;
+  showExample();
   if (sarvamConfigured(config) && !speech.canListen()) st.engine = "sarvam";
   await document.fonts.ready;
 
   $("mic-disc").append(icon("mic"));
   buildEngine(config);
-  buildSamples(config.samples);
+  buildLangs();
+  buildSamples([...config.samples, ...languages.flatMap((l) => l.samples)]);
   sketchBox($("tester-card"));
   sketchBox($("typed-wrap"), { shadow: false });
   sketchBox($("send"), { shadow: false });
   sketchBox($("yes"), { fill: "yellow" });
   sketchBox($("no"));
   $("tester").open = matchMedia("(min-width: 900px)").matches;
+  renderLang();
   renderMic();
   wireMic();
   $("yes").addEventListener("click", () => busy(() => answerWith("yes")));
