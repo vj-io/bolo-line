@@ -1,3 +1,5 @@
+import mimetypes
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
@@ -40,6 +42,8 @@ def audit_page():
     return FileResponse(WEB / "audit.html")
 
 
+# The slim image has no system MIME table, so the sample clips went out as application/octet-stream.
+mimetypes.add_type("audio/mp4", ".m4a")
 for prefix in ("shared", "station", "dashboard", "vendor", "samples", "audit"):
     app.mount(f"/{prefix}", StaticFiles(directory=WEB / prefix), name=prefix)
 app.mount("/audio", StaticFiles(directory=config.data_dir() / "audio"), name="audio")

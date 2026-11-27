@@ -11,6 +11,7 @@ import base64
 import binascii
 from functools import lru_cache
 
+from . import budget
 from .stt_sarvam import SarvamError, post
 
 MODEL = "bulbul:v4-flash"
@@ -30,6 +31,7 @@ def synthesize(text: str, language: str = "hi-IN") -> bytes:
     payload = {"text": text, "language_code": language, "model": MODEL, "pace": PACE, "enable_preprocessing": True}
     if language in SPEAKERS:
         payload["speaker"] = SPEAKERS[language]
+    budget.spend(budget.TTS_CHARS, len(text))  # only a cache miss gets here; BudgetReached is not cached either
     body = post("/text-to-speech", json=payload)
     audios = body.get("audios")
     if not isinstance(audios, list) or not audios or not isinstance(audios[0], str):
