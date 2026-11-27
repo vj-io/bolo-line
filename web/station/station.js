@@ -15,6 +15,7 @@ const EXAMPLE = "Example: Batch chaudah, oven do, ek sau assi degree, teen rejec
 const SHORT_PRESS_MS = 500;
 const SAVED_MS = 2500;
 const BOIL_MS = 135;
+const LANGUAGE = "hi-IN"; // BCP-47; the speech-to-text engine and the voice both take it
 
 const $ = (id) => document.getElementById(id);
 function el(tag, cls, text) {
@@ -60,7 +61,7 @@ async function busy(fn) {
 
 // ---------- voice ----------
 async function say(p) {
-  const spoken = await speech.speak(p.hi);
+  const spoken = await speech.speak(p.hi, LANGUAGE);
   $("voice-note").hidden = spoken;
 }
 
@@ -555,7 +556,7 @@ function heard(press, engine, result) {
   if (speech.MIC_ERRORS.has(result.error)) return micUnavailable();
   busy(async () => {
     if (engine === "sarvam") {
-      const r = await transcribe(result.blob);
+      const r = await transcribe(result.blob, LANGUAGE);
       writeWords(r.text);
       return handleText(r.text, "mic_sarvam", r.audio_url ?? null);
     }
@@ -613,7 +614,9 @@ async function init() {
   $("station-name").textContent = station.name;
   $("operator").textContent = `Operator: ${station.operator}`;
   $("saved-text").textContent = prompts.saved.roman;
-  if (sarvamConfigured(config) && !speech.canListen()) st.engine = "sarvam";
+  // Sarvam is the accurate engine, so it is the default whenever a key is set and the browser can record.
+  if (sarvamConfigured(config) && (speech.canRecord() || !speech.canListen())) st.engine = "sarvam";
+  speech.useSarvamVoice(sarvamConfigured(config));
   await document.fonts.ready;
 
   $("mic-disc").append(icon("mic"));
