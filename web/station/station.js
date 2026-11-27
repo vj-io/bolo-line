@@ -15,6 +15,7 @@ const LANG_KEY = "bolo.lang"; // localStorage: the language last chosen on this 
 const SHORT_PRESS_MS = 500;
 const SAVED_MS = 2500;
 const BOIL_MS = 135;
+const STT_WAIT_MS = 12000; // Calibration knob: Sarvam speech-to-text slower than this counts as failed
 
 const $ = (id) => document.getElementById(id);
 function el(tag, cls, text) {
@@ -632,12 +633,34 @@ function heard(press, engine, result) {
   if (speech.MIC_ERRORS.has(result.error)) return micUnavailable();
   busy(async () => {
     if (engine === "sarvam") {
-      const r = await transcribe(result.blob, lang.locale);
+      let r;
+      try {
+        // ponytail: a late answer is dropped, not aborted (transcribe() takes no signal); pass an
+        // AbortSignal through web/shared/stt_sarvam.js if the dropped calls ever matter.
+        r = await Promise.race([transcribe(result.blob, lang.locale), timeout(STT_WAIT_MS)]);
+      } catch (err) {
+        return sarvamFailed(err);
+      }
       writeWords(r.text);
       return handleText(r.text, "mic_sarvam", r.audio_url ?? null);
     }
     return handleText(result.text, "mic_browser");
   });
+}
+
+const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error(`no answer in ${ms / 1000} s`)), ms));
+
+// Sarvam failed for any reason (its daily budget, no credit, the network, or no answer in time).
+// The engine goes to the browser's speech, or, where the browser cannot listen, the mic turns off and
+// the samples open. The row on screen stays as it was; the operator says the sentence again.
+function sarvamFailed(err) {
+  console.warn("Sarvam speech-to-text failed; switching to the browser engine.", err?.message ?? err);
+  st.engine = "browser";
+  const radio = document.querySelector('input[name="engine"][value="browser"]');
+  if (radio) radio.checked = true;
+  renderMic();
+  $("error").textContent = `Sarvam is not available right now. ${st.micOk ? "Using the browser's speech." : "Use a sample or type below."}`;
+  $("error").hidden = false;
 }
 
 // A press under 0.5 s: nothing was said. In the middle of a question the question stays open.
