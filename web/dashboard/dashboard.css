@@ -1,0 +1,73 @@
+/* Owner dashboard. Colours come from tokens.css only; type sizes from base.css (18, 20, 30, 56 px).
+   Phone first: each log row is a card. At 640 px and wider the log is a table with plain straight rules. */
+.dash { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; display: grid; gap: 24px; }
+.dash [hidden] { display: none !important; }
+.dash-head { display: grid; gap: 10px; justify-items: start; }
+
+/* Server unreachable: red-pen ink on paper, with a cross icon. */
+.offline { display: flex; align-items: center; gap: 8px; color: var(--red-pen-ink); }
+.offline .icon { color: var(--red-pen); width: 1.2em; height: 1.2em; }
+
+/* The three counts. */
+.counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.count { display: grid; gap: 4px; align-content: start; padding: 12px; min-width: 0; }
+.count-wrap { display: block; }
+.count-n { display: inline-block; font-family: var(--font-hand); font-weight: 700; font-size: var(--fs-title); line-height: 1; }
+.count-label { font-size: var(--fs-note); line-height: 1.15; overflow-wrap: anywhere; }
+.count-temp .count-label { color: var(--red-pen-ink); }
+.count-rejects .count-label { color: var(--amber-ink); }
+
+/* The log, phone layout: one card per row, fields in three columns, each with its label above. */
+.log, .log-body { display: grid; gap: 26px; }
+.log-head { display: none; }
+.log-row {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 14px;
+  padding: 14px 16px; cursor: pointer;
+}
+.cell { min-width: 0; overflow-wrap: anywhere; }
+.cell::before { content: attr(data-label); display: block; color: var(--notes); font-size: var(--fs-note); }
+.cell-batch { order: 1; } .cell-time { order: 2; } .cell-machine { order: 3; } .cell-temp { order: 4; }
+.cell-rejects { order: 5; } .cell-operator { order: 6; } .cell-station { order: 7; }
+.cell-status { order: 8; grid-column: span 2; }
+.detail { order: 9; grid-column: 1 / -1; }
+
+/* Values. Digits never tilt. */
+.num, .row-open { font-family: var(--font-hand); font-weight: 700; }
+.num { position: relative; display: inline-block; }
+.num.bad { color: var(--red-pen-ink); }
+.num.warn { color: var(--amber-ink); }
+.row-open {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  text-decoration: underline dashed var(--marker-3); text-decoration-thickness: 1px; text-underline-offset: 5px;
+}
+.cell-status { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; }
+.cell-status::before { flex-basis: 100%; }
+.chip { display: inline-block; padding: 1px 10px; border-radius: var(--radius); font-size: var(--fs-note); }
+.chip-bad { background: var(--red-tint); color: var(--red-pen-ink); }
+.chip-warn { background: var(--amber-tint); color: var(--amber-ink); }
+
+/* Tapped row: what was heard, the source, and the recording when there is one. */
+.detail { display: grid; gap: 6px; padding-top: 6px; cursor: auto; }
+.detail-k { color: var(--notes); }
+.detail audio { width: min(100%, 360px); }
+
+@media (min-width: 640px) {
+  .count { padding: 14px 18px; }
+  .count-n { font-size: var(--fs-hero); }
+
+  .log { grid-template-columns: repeat(7, auto) 1fr; gap: 0; }
+  .log-head, .log-body, .log-row { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; gap: 0; }
+  .log-head { font-family: var(--font-hand); font-weight: 700; font-size: var(--fs-note); border-bottom: 2px solid var(--ink); }
+  .log-row { padding: 0; background: var(--paper); border-bottom: 1px solid var(--marker-2); }
+  .log-head > *, .cell { padding: 10px 6px; }
+  .cell { overflow-wrap: normal; }
+  .cell, .detail { order: 0; }
+  .cell::before { content: none; }
+  .cell-status { grid-column: auto; }
+  .detail { padding: 0 6px 14px; }
+}
+
+@media (min-width: 900px) {
+  .log-head > *, .cell { padding: 10px; }
+  .detail { padding: 0 10px 14px; }
+}
