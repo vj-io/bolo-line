@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bolo Line · Production record</title>
+  <link rel="stylesheet" href="/shared/tokens.css">
+  <link rel="stylesheet" href="/shared/base.css">
+  <link rel="stylesheet" href="/audit/audit.css">
+</head>
+<body>
+  <main class="audit">
+    <nav class="controls" aria-label="Audit export">
+      <a href="/dashboard">Back to the dashboard</a>
+      <label class="day">Day <input type="date" id="day"></label>
+      <button class="btn" type="button" id="print">Print or save as PDF</button>
+      <a id="csv" href="/api/rows.csv" download>Download CSV</a>
+    </nav>
+
+    <header class="card head" id="head">
+      <h1 class="title">Production record</h1>
+      <dl class="facts">
+        <div><dt>Station</dt><dd id="station">–</dd></div>
+        <div><dt>Date</dt><dd id="date">–</dd></div>
+        <div><dt>Operator</dt><dd id="operator">–</dd></div>
+        <div><dt>Batches</dt><dd id="n-all">–</dd></div>
+        <div><dt>Temp out of limit</dt><dd id="n-temp" class="bad">–</dd></div>
+        <div><dt>Rejects high</dt><dd id="n-rejects" class="warn">–</dd></div>
+      </dl>
+      <p class="note" id="limits">Times in IST (UTC+05:30).</p>
+    </header>
+
+    <div class="table-wrap">
+      <table class="record" id="record" hidden>
+        <thead>
+          <tr><th>Time</th><th>Batch</th><th>Machine</th><th>Temp (°C)</th><th>Rejects</th><th>Status</th><th>Source</th><th>What was heard</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="note" id="state" role="status">Reading the record...</p>
+
+    <footer class="sign">
+      <p class="sign-line">Checked by (supervisor)</p>
+      <p class="sign-line">Signature</p>
+      <p class="sign-line">Date</p>
+      <p class="note sign-note">Audit export from Bolo Line, a voice logbook. Each row was read back to the operator and saved only after a spoken or tapped "haan".</p>
+    </footer>
+  </main>
+  <script type="module" src="/audit/audit.js"></script>
+</body>
+</html>
