@@ -5,7 +5,7 @@ import { sketchBox } from "/shared/sketch.js";
 
 const POLL_MS = 2000;
 const $ = (id) => document.getElementById(id);
-const ENGINES = { browser: "Browser speech", sarvam: "Sarvam", sample: "Recorded sample", typed: "Typed" };
+const ENGINES = { browser: "Browser speech", sarvam: "Sarvam", sample: "Sample", typed: "Typed" };
 
 function el(tag, cls, text) {
   const node = document.createElement(tag);

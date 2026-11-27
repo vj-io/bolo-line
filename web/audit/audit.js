@@ -3,7 +3,7 @@ import { sketchBox } from "/shared/sketch.js";
 
 const $ = (id) => document.getElementById(id);
 const IST = "Asia/Kolkata";
-const SOURCES = { mic_browser: "Mic (browser)", mic_sarvam: "Mic (Sarvam)", sample: "Recorded sample", typed: "Typed", seed: "Seed row" };
+const SOURCES = { mic_browser: "Mic (browser)", mic_sarvam: "Mic (Sarvam)", sample: "Sample", typed: "Typed", seed: "Seed row" };
 const time = new Intl.DateTimeFormat("en-GB", { timeZone: IST, hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
 const longDate = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long", year: "numeric" });
 const todayIst = () => new Intl.DateTimeFormat("en-CA", { timeZone: IST }).format(new Date()); // YYYY-MM-DD
