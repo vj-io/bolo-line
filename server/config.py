@@ -9,7 +9,8 @@ WEB_DIR = SERVER_DIR.parent / "web"
 
 def data_dir() -> Path:
     """Database and stored audio live here. Read on every call so tests can point it elsewhere."""
-    path = Path(os.environ.get("DATA_DIR", "./.data"))
+    default = "/tmp/bolo" if os.environ.get("VERCEL") else "./.data"  # a Vercel function can write only /tmp
+    path = Path(os.environ.get("DATA_DIR", default))
     (path / "audio").mkdir(parents=True, exist_ok=True)
     return path
 
