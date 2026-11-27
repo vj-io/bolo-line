@@ -3,10 +3,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import config, routes_config, routes_parse, routes_rows, routes_stt
+from . import config, routes_config, routes_parse, routes_rows, routes_stt, routes_tts
 
 app = FastAPI(title="Bolo Line", version=routes_config.VERSION)
-for module in (routes_config, routes_parse, routes_rows, routes_stt):
+for module in (routes_config, routes_parse, routes_rows, routes_stt, routes_tts):
     app.include_router(module.router)
 
 
