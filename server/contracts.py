@@ -22,6 +22,8 @@ class Fields(BaseModel):
 class Say(BaseModel):
     hi: str
     roman: str
+    text: Optional[str] = None  # the words to speak, in the script of `lang`; `hi` is its old name and holds the same
+    lang: Optional[str] = None  # locale of `text`, e.g. "mr-IN". Both are sent when the request names a `lang`.
 
 
 class Flags(BaseModel):
@@ -45,6 +47,7 @@ class ParseRequest(BaseModel):
     text: str = ""
     draft: Optional[Fields] = None
     expect: Optional[FieldName] = None
+    lang: str = "hi"  # a language pack code from /api/config `languages`
 
 
 class ParseResponse(BaseModel):
@@ -55,10 +58,12 @@ class ParseResponse(BaseModel):
     problems: list[Problem] = []
     flags: Flags = Flags()
     say: Say
+    hint: Optional[Literal["wrong_language"]] = None  # sent when the request names a `lang`
 
 
 class ConfirmRequest(BaseModel):
     text: str = ""
+    lang: str = "hi"
 
 
 class ConfirmResponse(BaseModel):

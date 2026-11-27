@@ -22,4 +22,11 @@ def get_config():
         },
         "samples": config.SAMPLES,
         "prompts": config.PROMPTS,
+        # One entry per language pack, the default (Hindi) first. `samples` are that language's own
+        # tester samples; the top-level `samples` above stay the Hindi ones.
+        "languages": [
+            {**{k: pack[k] for k in ("code", "locale", "name", "name_en", "status", "labels", "prompts")},
+             "samples": [{**s, "lang": pack["code"]} for s in pack["samples"]]}
+            for pack in config.LANGS.values()
+        ],
     }

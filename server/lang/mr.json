@@ -1,0 +1,64 @@
+{
+  "code": "mr",
+  "locale": "mr-IN",
+  "name": "मराठी",
+  "name_en": "Marathi",
+  "status": "beta",
+  "notes": "Written on 27 Nov 2026 without a native speaker. Every keyword, yes and no word, prompt, label and sample sentence here still needs a Marathi speaker's check, and no spelling has been compared with real recogniser output yet. The number words in numbers_mr.json come from Unicode CLDR 49; the colloquial forms below do not, and each one is marked as not confirmed. Keep status at beta until the gate in the research plan (A4) is met.",
+  "script": {"name": "Devanagari", "first": "0900", "last": "097F"},
+  "keywords": {
+    "batch": ["बॅच", "बैच"],
+    "degree": ["डिग्री", "अंश"],
+    "temperature": ["टेंपरेचर", "टेम्परेचर", "तापमान"],
+    "reject": ["रिजेक्ट", "खराब", "बाद"],
+    "none": ["नाही"],
+    "any": ["कोणताही", "काही"],
+    "skip": ["नंबर", "क्रमांक", "चा", "ची", "चे", "आहे", "होता", "होतं", "आणि", "वर", "मध्ये", "झाले"]
+  },
+  "machines": {"oven": {"name": "ओव्हन", "aliases": ["ओव्हन", "ओवन"]}},
+  "yes": ["हो", "होय", "बरोबर", "ठीक", "चालेल"],
+  "no": ["नाही", "नको", "चूक", "चुकीचं"],
+  "numbers": {
+    "table": "numbers_mr.json",
+    "words": {},
+    "hundred": [],
+    "thousand": ["हजार"],
+    "half_hundred": {},
+    "colloquial": [
+      {"phrase": "दीडशे", "value": 150, "confirmed_by": null},
+      {"phrase": "अडीचशे", "value": 250, "confirmed_by": null},
+      {"phrase": "शंभर", "value": 100, "confirmed_by": null},
+      {"phrase": "एकशे", "value": 100, "confirmed_by": null}
+    ]
+  },
+  "or": {"text": " की ", "roman": " ki "},
+  "prompts": {
+    "ask_batch_no": {"text": "बॅच नंबर काय आहे?", "roman": "Batch number kay aahe?"},
+    "ask_machine": {"text": "कोणती मशीन? {machines_local}?", "roman": "Konti machine? {machines}?"},
+    "ask_temperature_c": {"text": "टेंपरेचर किती होतं?", "roman": "Temperature kiti hota?"},
+    "ask_rejects": {"text": "किती रिजेक्ट झाले?", "roman": "Kiti reject jhale?"},
+    "confirm_machine": {"text": "{machine_local} म्हणालात? हो की नाही?", "roman": "{machine} mhanalat? Ho ki nahi?"},
+    "no_speech": {"text": "आवाज आला नाही, पुन्हा बोला", "roman": "Aavaj aala nahi, punha bola"},
+    "not_understood": {"text": "समजलं नाही, पुन्हा बोला", "roman": "Samajla nahi, punha bola"},
+    "unclear_confirm": {"text": "बरोबर आहे? हो किंवा नाही बोला", "roman": "Barobar aahe? Ho kinva nahi bola"},
+    "retry": {"text": "पुन्हा बोला", "roman": "Punha bola"},
+    "saved": {"text": "सेव्ह झालं", "roman": "Save jhala"},
+    "readback": {"text": "बॅच {batch_no}, {machine_local}, {temperature_c} डिग्री, {rejects} रिजेक्ट. बरोबर आहे?", "roman": "Batch {batch_no}, {machine}, {temperature_c} degree, {rejects} reject. Barobar aahe?"},
+    "wrong_language": {"text": "भाषा वेगळी वाटते. वर तुमची भाषा निवडा", "roman": "Bhasha vegli vatte. Var tumchi bhasha nivda"}
+  },
+  "labels": {
+    "mic": "दाबून बोला",
+    "mic_unavailable": "या ब्राउझरमध्ये माइक चालत नाही",
+    "yes": "हो",
+    "no": "नाही",
+    "temp_limit": "लिमिट {min} ते {max} च्या बाहेर. सेव्ह होईल, मालकाला दिसेल.",
+    "rejects_limit": "लिमिट {max} पेक्षा जास्त. सेव्ह होईल, मालकाला दिसेल.",
+    "example": "बॅच चौदा, ओव्हन दोन, एकशे ऐंशी डिग्री, तीन रिजेक्ट"
+  },
+  "samples": [
+    {"id": "mr1", "label": "Marathi: normal batch", "when": "idle",
+     "text": "बॅच चौदा, ओव्हन दोन, एकशे ऐंशी डिग्री, तीन रिजेक्ट", "audio_url": null},
+    {"id": "mr2", "label": "Marathi and English: temperature too high", "when": "idle",
+     "text": "batch fifteen, oven एक, दोनशे दहा degree, दोन reject", "audio_url": null}
+  ]
+}
